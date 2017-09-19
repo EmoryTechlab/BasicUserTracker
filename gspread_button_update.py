@@ -9,13 +9,13 @@ import pytz
 
 # Necessary credentials and sheet identification for authenticating
 # and reading/writing
-JSON_KEYFILE = 'Replace_This_Json.json'
-SHEET_ID = 'add your own sheet ID'
+JSON_KEYFILE = 'Replace_This_JSON.json'
+SHEET_ID = 'SHEETID_YOU_MAKE'
 scope = ['https://www.googleapis.com/auth/spreadsheets']
 
 # Dictionary holding key-value pairs of serial number from button and action
 # each button is assigned
-buttons = {'XXXbuttonserialnumberXXX' : "User helped inside facility", 'XXXbuttonserialnumberXXX' : "User told to GTFO"}
+buttons = {'XXXserialnumeberXXX' : "Deep Interaction", 'XXXserialnumeberXXX' : "Quick Interaction"}
 
 def lambda_main(serial_number):
 
@@ -35,17 +35,24 @@ def lambda_main(serial_number):
 
 	# Basic list containing str representations of data
 	col_time = gsheet.col_values(1)
+# 
+# 	for cell in range(len(col_time)):
+# 			print(col_time[cell])
 
 	# Find next blank cell, remember coordinate of cell
 	cell_coord = None
 	for cell in range(len(col_time)):
 		if (col_time[cell] == ''):
 			cell_coord = 'A' + str(cell+1)
+			print(cell_coord)
 			break
 	# Update relevant cells with necessary info
 	gsheet.update_acell(cell_coord, time_stamp)
 
-	action_cell_coord = 'B' + cell_coord[1]
+	action_cell_coord = 'B' + cell_coord[1:]
+	
+	print(action_cell_coord)
+	
 	gsheet.update_acell(action_cell_coord, buttons[serial_number])
 
 """lambda_handler will activate when button is pressed. Button sends JSON payload that looks like
