@@ -4,18 +4,56 @@ The tracker works via the intersection of several things - AWS Button, Lambda se
 
 AWS BUTTON / LAMBDA:
 
-It works via the Amazon Button -- a device that when pressed executes the corresponding python script (this script can be found in the gspread_button_update.py file). The script is executed on the Amazon Web Service "Server-less" Lambda feature, which you can access if you have an AWS account (Sign in --> AWS Management Console --> Search "Lambda"). You can create a new function in Lambda and attach "triggers" (like the button) to this function. Access to the script that is being run is from Robin's account.
+The Amazon Button is a device that when pressed executes the corresponding python script (this script can be found in the gspread_button_update.py file). The script is executed on the AWS "Server-less" Lambda feature, which you can access if you have an AWS account (Sign in --> AWS Management Console --> Search "Lambda"). You can create a new function (like our python script) in Lambda and attach "triggers" (the button) to this function. Access to the script that is being run is solely from Robin's account, for obvious reasons.
 
-However, and this is where things start to get convoluted, if your script needs to import modules that are not in the AWS SDK (which is pratically any module in python, JS, etc.), then you need to create what's called a deployment package. A deployment package is a directory that contains in it all the modules you need to run the script, necessary files for authentication, as well as the script. There is a defined structure to them and this can be found here -- https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html (specifically for python, but the idea is relatively the same for whatever language you choose).
+However, and this is where things start to get complicated, if your script needs to import modules that are not in the AWS SDK (which is pratically any module in python, JS, etc.), then you need to create what's called a deployment package. A deployment package is a directory that contains in it all the modules you need to run the script, necessary files for authentication (such as our JSON KEYFILE), and the script itself. There is a defined structure to them and this can be found here -- https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html (specifically for python, but the idea is relatively the same for whatever language you choose).
 
-Referring to line 66 -
-This formatting is crucial to running the script. When the button is pressed, the script refers to the handler, which then executes the rest of the code.
 
-Google OAuth and gspread:
 
-gspread is friggin' awesome because it basically helps you circumvent a lot of the craziness that is working through the Google OAuth process (I linked the API for gspread in gspread_button_update.py).
+SETTING UP / DEPLOYING IN LAMBDA
 
-To begin, you need to head to the Google API Dashboard (while signed in to the account that is hosting the spread sheet) and activate the relevant APIs (in this case, this is the Sheets and Drive API). Then, follow the instructions to receive the relevant credentials (the JSON KEYFILE).
+What SHOULD BE UNDERSTOOD from that link is that your script must be in the root of the deployment package. The package CANNOT find the script otherwise. The same is true of the modules imported in the script. So your package should look like this:
+
+-----------------
+|script.py
+|JSON KEYFILE
+|module1
+|module2
+|.....
+|module n
+|.....
+
+(Robin can also help if there any questions about this since he actually has the file)
+
+DISREGARD THIS NEXT SECTION IF YOU'RE NOT SCRIPTING IN PYTHON:
+
+With this, I used two pieces of software to actually create the package - pip (https://pypi.python.org/pypi/pip) and virtualenv (https://pypi.python.org/pypi/virtualenv). pip is python's version of package management, and if your version of python is 2.7.9+ or 3.4+, then pip actually comes with your installation of python. If you're not using these versions, you need to consider your OS. pip is easy to install if you have bash (so linux and MacOS), but less so with Windows (honestly, figure out how to partition your hard drive, get Ubuntu, and dual boot; your coding world will be way better). Otherwise, google how to install pip and virtualenv for Windows. With MacOS, I believe homebrew is the software used for package management.
+
+So why do we need these two things? With virtualenv, you can create an entirely separate environment to script in. What this means is adding variables to your class path, or setting environment variables, without interfering with these really important things in your actual OS. So you can use pip to install packages on a whim, and you can set env vars, building your deployment package in a completely safe, self-contained way.
+
+
+
+LAMBDA FIELDS / VARS:
+
+It is also important to note the method in the script called lambda_handler.
+
+This formatting is crucial to running the script. When the button is pressed, the script refers to the handler, and that in turn executes the rest of the code. In the Lambda console, you must specify the handler in the Handler field. The format is simply script_name.handler_method_name.
+
+Next is specifying the Environment Variables. There's only one, and it's important that GOOGLE_APLICATION_CREDENTIALS is set to "JSON KEYFILE.json" (quotes included, as this is a symbolic link).
+
+
+
+GOOGLE OAUTH / GSPREAD:
+
+gspread is friggin' awesome because it basically helps you circumvent a lot of the craziness that is complying with the Google OAuth process (I linked the API for gspread in gspread_button_update.py).
+
+If you wanted to start from scratch and figure out how to authorize your google account and thus use any of its relative APIs, you start by:
+- heading to the Google API Dashboard (while signed in to the account that is hosting the spread sheet)
+- making a developer account
+- enabling the relevant APIs (in this case, I enabled the Sheets and Drive API)
+- following the instructions to receive the relevant credentials (the JSON KEYFILE is crucial for this example, but I believe depending on what project you're using determines what kind of authetication you need).
+
+Another kind of esoteric but important detail is that it's necessary to share your sheet with the Google dashboard account you made and received the credentials from. You will likely get an email saying that the email is non-existent or something, but ignore that. 
 
 Referring to lines 12-14:
 The JSON KEYFILE is crucial as it provides the script with the necessary permissions.
