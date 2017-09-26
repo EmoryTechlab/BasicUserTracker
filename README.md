@@ -64,7 +64,7 @@ If you wanted to start from scratch and figure out how to authorize your google 
 - heading to the Google API Dashboard (while signed in to the account that is hosting the spread sheet)
 - making a developer account
 - enabling the relevant APIs (in this case, I enabled the Sheets and Drive API)
-- following the instructions to receive the relevant credentials (the JSON KEYFILE is crucial for this example, but I believe depending on what project you're using determines what kind of authetication you need).
+- following the instructions to receive the relevant credentials (the JSON KEYFILE is crucial in this case, but depending on what project you're using determines what kind of authetication you need).
 
 Another kind of esoteric but important detail is that it's necessary to share your sheet with the Google dashboard account you made and received the credentials from. You will likely get an email saying that the email is non-existent or something, but ignore that. 
 
@@ -74,5 +74,5 @@ The JSON KEYFILE is crucial as it provides the script with the necessary permiss
 The SHEET ID is just a string of characters and numbers in the URL of the sheet (between "d/" and "/edit") -
 https://docs.google.com/spreadsheets/d/1vdifwbycoT7rW9WmRCOuXkjsyTRcxV2P72YbwCqjszY/edit#gid=0
 
-The scope refers to what permissions the Sheets API grants you - the one in the code basically gives you read and write permissions.
+The scope refers to what permissions the Sheets API grants you - the one in the script basically gives you read and write permissions.
 
