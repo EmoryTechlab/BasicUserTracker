@@ -19,11 +19,17 @@ What SHOULD BE UNDERSTOOD from that link is that your script must be in the root
 +--------------+
 
 |script.py
+|
 |JSON KEYFILE
+|
 |module1
+|
 |module2
+|
 |.....
+|
 |module n
+|
 |.....
 
 (Robin can also help if there any questions about this since he actually has the file)
